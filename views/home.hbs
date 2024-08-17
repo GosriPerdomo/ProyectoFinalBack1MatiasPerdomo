@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product List</title>
+  <link rel="stylesheet" href="/styles.css"> <!-- Si tienes estilos adicionales -->
+</head>
+<body>
+  <h1>Product List</h1>
+
+  {{#if products}}
+    <div id="products-container">
+      {{#each products}}
+        <div class="product">
+          <h2>{{this.name}}</h2>
+          <p>{{this.description}}</p>
+          <p>Price: ${{this.price}}</p>
+          <p>Category: {{this.category}}</p>
+          <a href="/products/{{this._id}}" class="btn-details">View Details</a>
+          <button class="btn-add-to-cart" data-id="{{this._id}}">Add to Cart</button>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <p>No products available.</p>
+  {{/if}}
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // Event listener for adding products to the cart
+    document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+      button.addEventListener('click', (event) => {
+        const productId = event.target.getAttribute('data-id');
+        fetch(`/api/carts/your-cart-id/products/${productId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ quantity: 1 }) // Ajusta la cantidad según sea necesario
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Product added to cart:', data);
+        })
+        .catch(error => console.error('Error adding product to cart:', error));
+      });
+    });
+  </script>
+</body>
+</html>
+
+  
+
+
+
+
